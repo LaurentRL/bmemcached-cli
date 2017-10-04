@@ -37,9 +37,10 @@ class BMemcachedCli(cmd.Cmd, object):
         # look hosts for username/password for SASL authentication - when found, assume all servers use the same
         auth = [None, None]
         for idx in xrange(len(host_list)):
-            if host_list[idx].find('@') > -1:
-                auth = host_list[idx].split('@')[0].split(':')
-                host_list[idx] = host_list[idx].split('@')[1]  # remove auth from server entry
+            lastAt = host_list[idx].rfind('@')
+            if lastAt > -1:
+                auth = host_list[idx][:lastAt].split(':')
+                host_list[idx] = host_list[idx][lastAt + 1:]  # remove auth from server entry
         self.memcache = Client(host_list, auth[0], auth[1])
         self._check_connection(
             host_list)  # Make sure we actually have connections, since our library doesn't make this apparent
